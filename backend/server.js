@@ -1,16 +1,21 @@
 // server.js
-import express from 'express';
-import multer from 'multer';
+import express from "express";
+import multer from "multer";
 
-import fs from 'fs';
-import { envDefaults } from './envDefaults.js';
-import { uploadPdf, getParsedData, getJobStatus } from './controllers/uploadController.js';
+import fs from "fs";
+import { envDefaults } from "./envDefaults.js";
+import {
+  uploadPdf,
+  getParsedData,
+  getJobStatus,
+  sendUserChat,
+} from "./controllers/uploadController.js";
 const app = express();
 const PORT = envDefaults.PORT;
 
-const uploadDir = './uploads';
+const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-
+app.use(express.json());
 // Multer config for PDF uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
@@ -18,14 +23,25 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// === Upload Endpoint ===
-app.post('/upload', upload.single('pdf'), uploadPdf);
 
-app.get('/getparseddata/:id', getParsedData);
-app.get("/get_job_status/:id",getJobStatus)
-app.get('/', (req, res) => {
-  res.send('Hello World');
+
+
+
+// ===  Endpoint ===
+app.post("/upload", upload.single("pdf"), uploadPdf);
+app.get("/getparseddata/:id", getParsedData);
+app.get("/get_job_status/:id", getJobStatus);
+app.post("/send_user_chat", sendUserChat);
+
+//health check
+app.get("/", (req, res) => {
+  res.send("Hello World");
 });
 
+
+
+
 // Start server
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
