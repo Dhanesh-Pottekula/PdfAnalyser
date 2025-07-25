@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { apiService } from "../utils/apiService";
 import { apiUrls } from "../constants/apiUrls";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface Message {
   page?: number;
@@ -8,7 +10,13 @@ interface Message {
   isUser: boolean;
 }
 
-function ChatInterface({handlePageClick}: {handlePageClick: (page: number) => void}) {
+function ChatInterface({
+  handlePageClick,
+  onClearFile,
+}: {
+  handlePageClick: (page: number) => void;
+  onClearFile: () => void;
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -32,23 +40,32 @@ function ChatInterface({handlePageClick}: {handlePageClick: (page: number) => vo
     }
   };
 
-
-
   const sendMessageToBackend = async (message: string) => {
-
     const res = await apiService.postData(apiUrls.sendUserChat, {
       message,
-      matchCount:10
+      matchCount: 10,
     });
-    setMessages((prevMessages) => [...prevMessages, {
-      page:res.page,
-      text: res.text,
-      isUser: false,
-    }]);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        page: res.page,
+        text: res.text,
+        isUser: false,
+      },
+    ]);
   };
   console.log(" chat interface component");
   return (
-    <div className="h-full border border-neutral-200 rounded-soft flex flex-col bg-white shadow-soft overflow-hidden">
+    <div className="h-full border border-neutral-200 rounded-soft flex flex-col bg-white shadow-soft overflow-hidden relative">
+      {/* Cross Button */}
+      <button
+        onClick={onClearFile}
+        className="absolute top-4 right-3 z-50 w-10 h-10 bg-white/90 backdrop-blur-sm border border-neutral-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-red-50 hover:border-red-300 group"
+        title="Clear file and return to upload"
+      >
+        <FontAwesomeIcon icon={faXmark} />
+      </button>
+
       {messages.length === 0 && (
         <>
           {/* Enhanced Header */}
@@ -186,7 +203,7 @@ function ChatInterface({handlePageClick}: {handlePageClick: (page: number) => vo
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="w-full px-4 py-3 border border-neutral-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              className=" text-black text-md w-full px-4 py-3.5 border border-gray-400 rounded-xl bg-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 hover:shadow-md placeholder-gray-400"
             />
           </div>
           <button

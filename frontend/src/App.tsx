@@ -11,11 +11,16 @@ function App() {
   ) => {
     setFile(file);
   };
+
+  const clearFile = () => {
+    setFile(null);
+  };
+
   console.log(" app.js : file")
   return (
     <>
       {file ? (
-        <ShowChatAndPdf file={file} />
+        <ShowChatAndPdf file={file} onClearFile={clearFile} />
       ) : (
         <UploadPdfComponent onUploadSuccess={handleUploadSuccess} />
       )}
