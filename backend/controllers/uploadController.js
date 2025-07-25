@@ -68,9 +68,9 @@ export const getJobStatus = async (req, res) => {
     const status = await getStatusOfPdf(job_id);
     if (status?.status == "SUCCESS") {
       //if job is done then get the markdown of pdf
-      // const parsedData = await fetchParsedResult(job_id);
-      // await getEmbeddingsAndStoreInDb(parsedData);
-      await getEmbeddingsAndStoreInDb(demoLlamaParseData);
+      const parsedData = await fetchParsedResult(job_id);
+      await getEmbeddingsAndStoreInDb(parsedData);
+      // await getEmbeddingsAndStoreInDb(demoLlamaParseData);
     }
 
     res.json({ status });
