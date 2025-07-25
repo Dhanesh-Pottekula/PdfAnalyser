@@ -1,7 +1,7 @@
 // server.js
 import express from "express";
 import multer from "multer";
-
+import cors from "cors";
 import fs from "fs";
 import { envDefaults } from "./envDefaults.js";
 import {
@@ -16,6 +16,10 @@ const PORT = envDefaults.PORT;
 
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+}));
 app.use(express.json());
 // Multer config for PDF uploads
 const storage = multer.diskStorage({
@@ -23,8 +27,6 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
 const upload = multer({ storage });
-
-
 
 
 
