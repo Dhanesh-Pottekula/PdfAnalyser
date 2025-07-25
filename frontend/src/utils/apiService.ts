@@ -41,7 +41,7 @@ export const apiService = {
         const formData = new FormData();
         formData.append('pdf', file);
         
-        return await generalFetch(apiUrls.uploadPdf, 'POST', formData);
+        return await generalFetch( `${envDefaults.baseUrl}${apiUrls.uploadPdf}`, 'POST', formData);
     },
     
     // Example of using the general fetch function

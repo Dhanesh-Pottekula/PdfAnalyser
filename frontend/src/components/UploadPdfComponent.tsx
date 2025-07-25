@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { apiService } from '../utils/apiService';
+import { apiUrls } from '../constants/apiUrls';
 
 interface UploadState {
   isUploading: boolean;
@@ -63,18 +64,55 @@ function UploadPdfComponent({ onUploadSuccess }: UploadPdfComponentProps) {
     }));
   }, []);
 
+
+
+
   const simulateUpload = async () => {
     setUploadState((uploadState)=> ({...uploadState, isUploading: true, progress: 0}));
-    const interval = await startUpload();
+    // start the upload bar
+    const interval =  startUpload();
+    // upload the file to the backend
     const response = await apiService.uploadPdf(currentFileRef.current as File);
+    // stop the upload bar if response is completed
     clearInterval(interval);
+
     if(response.documentId){
-      setUploadState((uploadState)=> ({...uploadState, isUploading: false, progress: 100}));
-      onUploadSuccess?.(currentFileRef.current as File, uploadState.fileName, uploadState.fileSize);
+      checkTheFileStatus(response.documentId);
     }else{
       setUploadState((uploadState)=> ({...uploadState, isUploading: false, progress: 0, error: "Upload failed"}));
     }
   };
+
+  const startUpload =  () => {
+    const interval = setInterval(() => {
+        setUploadState((prev) => {
+          const nextProgress = prev.progress + 10;
+          if (nextProgress >= 90) { 
+            clearInterval(interval);
+            return {...prev, isUploading: false, progress: 100 };
+          }
+          return { ...prev, progress: nextProgress };
+        });
+      }, 600); 
+      return interval;
+  }
+  const checkTheFileStatus = async (documentId: string) => {
+    let retryCount = 0;
+    const interval = setInterval(async () => {
+      const response = await apiService.getData(`${apiUrls.getJobStatus.replace(":id", documentId)}`);
+      if(response.status?.status === "SUCCESS"){
+        onUploadSuccess?.(currentFileRef.current as File, uploadState.fileName, uploadState.fileSize);
+        clearInterval(interval);
+      }else{
+        retryCount++;
+        if(retryCount > 6){
+          clearInterval(interval);
+          setUploadState((uploadState)=> ({...uploadState, isUploading: false, progress: 0, error: "Upload failed"}));
+        }
+      }
+    }, 5000);
+    return interval;
+  }
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -124,19 +162,7 @@ function UploadPdfComponent({ onUploadSuccess }: UploadPdfComponentProps) {
     }
   };
 
-  const startUpload = async () => {
-    const interval = setInterval(() => {
-        setUploadState((prev) => {
-          const nextProgress = prev.progress + 10;
-          if (nextProgress >= 90) { 
-            clearInterval(interval);
-            return {...prev, isUploading: false, progress: 100 };
-          }
-          return { ...prev, progress: nextProgress };
-        });
-      }, 300); 
-      return interval;
-  }
+ 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">

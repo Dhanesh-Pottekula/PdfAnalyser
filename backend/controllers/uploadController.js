@@ -26,12 +26,12 @@ export const uploadPdf = async (req, res) => {
   if (!filePath) return res.status(400).json({ error: "No file uploaded" });
 
   try {
-    // const documentId = await uploadPdfToLlamaParse(filePath);
+    const documentId = await uploadPdfToLlamaParse(filePath);
 
     // Delete uploaded file after processing
     fs.unlinkSync(filePath);
 
-    res.json({ documentId : "c62d17ed-6658-4477-b431-7e54b3b3ebb0"});
+    res.json({ documentId });
   } catch (error) {
     console.error(
       "Error during upload/parse:",
@@ -68,8 +68,8 @@ export const getJobStatus = async (req, res) => {
     const status = await getStatusOfPdf(job_id);
     if (status?.status == "SUCCESS") {
       //if job is done then get the markdown of pdf
-      // const parsedData = await fetchParsedResult(job_id);
-      // await getEmbeddingsAndStoreInDb(parsedData);
+      const parsedData = await fetchParsedResult(job_id);
+      await getEmbeddingsAndStoreInDb(parsedData);
       // await getEmbeddingsAndStoreInDb(demoLlamaParseData);
     }
 
