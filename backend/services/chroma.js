@@ -21,7 +21,6 @@ let vectorStore = new MemoryVectorStore(embeddings);
 export const storeInChroma = async (documents) => {
   // Clear existing database by creating a new vector store instance
   vectorStore = new MemoryVectorStore(embeddings);
-  console.log("documents storing in vector store length", documents.length)
   // Add new documents to the fresh database
   await vectorStore.addDocuments(documents);
   return vectorStore;

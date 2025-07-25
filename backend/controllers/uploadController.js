@@ -22,7 +22,7 @@ const geminiService = new GeminiService();
 // Upload and parse PDF endpoint
 export const uploadPdf = async (req, res) => {
   const filePath = req.file?.path;
-  console.log(filePath);
+
   if (!filePath) return res.status(400).json({ error: "No file uploaded" });
 
   try {

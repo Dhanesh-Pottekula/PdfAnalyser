@@ -18,7 +18,7 @@ const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: envDefaults.FRONTEND_URL,
 }));
 app.use(express.json());
 // Multer config for PDF uploads

@@ -31,7 +31,6 @@ class GeminiService {
     });
 
     const rawText = await response.response.text();
-    console.log("rawText", rawText);
     const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/);
 
     if (!jsonMatch || !jsonMatch[1]) {
