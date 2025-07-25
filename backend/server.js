@@ -9,6 +9,7 @@ import {
   getParsedData,
   getJobStatus,
   sendUserChat,
+  pingGemini,
 } from "./controllers/uploadController.js";
 const app = express();
 const PORT = envDefaults.PORT;
@@ -32,6 +33,7 @@ app.post("/upload", upload.single("pdf"), uploadPdf);
 app.get("/getparseddata/:id", getParsedData);
 app.get("/get_job_status/:id", getJobStatus);
 app.post("/send_user_chat", sendUserChat);
+app.post("/ping_gemini", pingGemini);
 
 //health check
 app.get("/", (req, res) => {

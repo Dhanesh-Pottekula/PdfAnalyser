@@ -25,7 +25,7 @@ import { Document } from "@langchain/core/documents";
 export const getEmbeddingsAndStoreInDb = async (data) => {
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 500,
-    chunkOverlap: 50,
+    chunkOverlap: 30,
   });
 
   const allChunks = [];
@@ -63,13 +63,6 @@ export const getEmbeddingsAndStoreInDb = async (data) => {
  * @param {string} query - The search query to find similar documents
  * @param {number} [matchCount=10] - The number of similar documents to retrieve
  * @returns {Promise<Array<Document>>} Array of similar documents with their content and metadata
- *
- * @example
- * const results = await retreiveFromVectorStore("machine learning", 5);
- * results.forEach(doc => {
- *   console.log(doc.pageContent);
- *   console.log(doc.metadata);
- * });
  */
 export const retreiveFromVectorStore = async (query, matchCount = 10) => {
   const vectorStore = await getChroma();
