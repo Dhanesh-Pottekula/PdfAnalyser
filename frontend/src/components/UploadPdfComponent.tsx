@@ -73,12 +73,13 @@ function UploadPdfComponent({ onUploadSuccess }: UploadPdfComponentProps) {
     const interval =  startUpload();
     // upload the file to the backend
     const response = await apiService.uploadPdf(currentFileRef.current as File);
-    // stop the upload bar if response is completed
     clearInterval(interval);
 
     if(response.documentId){
       checkTheFileStatus(response.documentId);
     }else{
+    clearInterval(interval);
+
       setUploadState((uploadState)=> ({...uploadState, isUploading: false, progress: 0, error: "Upload failed"}));
     }
   };
@@ -89,13 +90,13 @@ function UploadPdfComponent({ onUploadSuccess }: UploadPdfComponentProps) {
           const nextProgress = prev.progress + 10;
           if (nextProgress >= 90) { 
             clearInterval(interval);
-            return {...prev, isUploading: false, progress: 100 };
           }
           return { ...prev, progress: nextProgress };
         });
-      }, 600); 
+      }, 400); 
       return interval;
   }
+
   const checkTheFileStatus = async (documentId: string) => {
     let retryCount = 0;
     const interval = setInterval(async () => {
@@ -109,6 +110,15 @@ function UploadPdfComponent({ onUploadSuccess }: UploadPdfComponentProps) {
           clearInterval(interval);
           setUploadState((uploadState)=> ({...uploadState, isUploading: false, progress: 0, error: "Upload failed"}));
         }
+        setUploadState((prev) => {
+          const nextProgress = prev.progress + 10;
+          if (nextProgress >= 90) { 
+            clearInterval(interval);
+            return {...prev, isUploading: false, progress: 100 };
+          }
+          return { ...prev, progress: nextProgress };
+        });
+
       }
     }, 5000);
     return interval;

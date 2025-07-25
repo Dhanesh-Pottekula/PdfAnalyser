@@ -8,18 +8,19 @@ import './PdfViewer.css';
 
 type Props = {
     fileUrl: string;
-    page: number;
+    page: {page: number};
 };
 
 const PDFViewerComponent = ({ fileUrl, page }: Props) => {
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
     useEffect(() => {
-        if (page > 0) {
+      console.log("page", page.page);
+        if (page.page > 0) {
             // Use setTimeout to ensure the PDF is loaded before navigating
             const timer = setTimeout(() => {
                 // Try to find the page element by its data attribute
-                const pageElement = document.querySelector(`[data-testid="core__page-layer-${page - 1}"]`) as HTMLElement;
+                const pageElement = document.querySelector(`[data-testid="core__page-layer-${page.page - 1}"]`) as HTMLElement;
                 if (pageElement) {
                     // Scroll to the specific page
                     pageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });

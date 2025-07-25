@@ -8,13 +8,13 @@ interface ShowChatAndPdfProps {
 }
 
 function ShowChatAndPdf({ file, onClearFile }: ShowChatAndPdfProps) {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<{page: number} >({page: 1});
   const fileUrl = URL.createObjectURL(file) 
 
   const handlePageClick = (page: number) => {
     console.log(`Navigating to page ${page}`);
     if(page > 0){
-      setPage(page);
+      setPage((prev)=> ({...prev, page: page}));
     }
   };
 

@@ -19,7 +19,7 @@ function ChatInterface({
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
-
+  const [sendMessageLoading, setSendMessageLoading] = useState(false);
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
       const newMessage = {
@@ -41,6 +41,7 @@ function ChatInterface({
   };
 
   const sendMessageToBackend = async (message: string) => {
+    setSendMessageLoading(true);
     const res = await apiService.postData(apiUrls.sendUserChat, {
       message,
       matchCount: 10,
@@ -53,6 +54,7 @@ function ChatInterface({
         isUser: false,
       },
     ]);
+    setSendMessageLoading(false);
   };
   console.log(" chat interface component");
   return (
@@ -159,7 +161,7 @@ function ChatInterface({
               }`}
             >
               {!message.isUser && (
-                <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mr-3 mt-1">
+                <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mr-1 mt-1">
                   <svg
                     className="w-5 h-5 text-white"
                     fill="currentColor"
@@ -171,9 +173,9 @@ function ChatInterface({
               )}
               <div className="flex flex-col">
                 <div
-                  className={`max-w-[75%] px-4 py-3 rounded-2xl ${
+                  className={`max-w-[75%] px-2 py-1 rounded-2xl ${
                     message.isUser
-                      ? "bg-blue-500 text-white shadow-lg font-bold"
+                      ? "bg-blue-400 text-white shadow-lg font-bold"
                       : "bg-gray-100 text-gray-800 border border-gray-200"
                   } text-sm leading-relaxed`}
                 >
@@ -199,6 +201,7 @@ function ChatInterface({
           <div className="flex-1">
             <input
               type="text"
+              disabled={sendMessageLoading}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -208,13 +211,16 @@ function ChatInterface({
           </div>
           <button
             onClick={handleSendMessage}
-            disabled={!inputMessage.trim()}
+            disabled={!inputMessage.trim() || sendMessageLoading}
             className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
               inputMessage.trim()
                 ? "bg-primary-600 text-white hover:bg-primary-700 shadow-sm"
                 : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
             }`}
           >
+            {sendMessageLoading ? (
+              <div className="w-5 h-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+            ) : (
             <svg
               className="w-5 h-5"
               fill="none"
@@ -228,6 +234,7 @@ function ChatInterface({
                 d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
               />
             </svg>
+            )}
           </button>
         </div>
       </div>
